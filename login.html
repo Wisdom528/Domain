@@ -4,59 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - DomainNest</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  body {margin:0; font-family:'Inter',sans-serif; background:#f9f9f9; display:flex; justify-content:center; align-items:center; height:100vh;}
-  .container {background:#fff; padding:40px; border-radius:12px; width:100%; max-width:400px; box-shadow:0 4px 15px rgba(0,0,0,0.1);}
-  h2 {text-align:center; color:#1d4ed8; margin-bottom:25px;}
-  label {display:block; margin-top:15px; font-weight:600; color:#111;}
-  input {width:100%; padding:12px; margin-top:5px; border:1px solid #d1d5db; border-radius:8px; outline:none;}
-  button {width:100%; padding:12px; margin-top:20px; background:#1d4ed8; color:#fff; font-weight:600; border-radius:8px; border:none;}
-  button:hover {background:#2563eb;}
-  .bottom-text {text-align:center; margin-top:15px; font-size:0.9rem; color:#6b7280;}
-  .bottom-text a {color:#1d4ed8; font-weight:600;}
+body { font-family: 'Segoe UI', sans-serif; background:#f9f9f9; color:#333; display:flex; justify-content:center; align-items:center; height:100vh; }
+.container { background:#fff; padding:40px; border-radius:10px; box-shadow:0 0 15px rgba(0,0,0,0.1); width:300px; text-align:center; }
+input { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc; }
+button { padding:10px 20px; background:#2563eb; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+button:hover { background:#1e40af; }
+a { display:block; margin-top:10px; color:#16a34a; text-decoration:none; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Login to DomainNest</h2>
-  <form id="loginForm">
-    <label for="email">Email</label>
-    <input type="email" id="email" placeholder="you@example.com" required>
-    <label for="password">Password</label>
-    <input type="password" id="password" placeholder="Your password" required>
-    <button type="submit">Login</button>
-  </form>
-  <div class="bottom-text">
-    Don't have an account? <a href="signup.html">Sign up</a>
-  </div>
+<h2>Login</h2>
+<input type="email" id="email" placeholder="Email" required />
+<input type="password" id="password" placeholder="Password" required />
+<button id="loginBtn">Login</button>
+<a href="signup.html">Don't have an account? Sign Up</a>
+<div id="message" style="margin-top:10px; color:red;"></div>
 </div>
 
 <script>
-const form = document.getElementById("loginForm");
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+document.getElementById('loginBtn').onclick = async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const messageDiv = document.getElementById('message');
 
-  try {
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({email,password})
-    });
-    const data = await res.json();
-    if(data.token){
-      localStorage.setItem("token", data.token);
-      window.location.href = "/"; // redirect to dashboard
-    } else {
-      alert(data.error);
+    if (!email || !password) return messageDiv.innerText = "Please enter all fields";
+
+    try {
+        const res = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if(data.token){
+            localStorage.setItem('token', data.token);
+            window.location.href = '/'; // go to dashboard
+        } else {
+            messageDiv.innerText = data.error || "Login failed, try again";
+        }
+    } catch(err){
+        messageDiv.innerText = "Login failed, check your network";
     }
-  } catch(err){
-    alert("Login failed, try again");
-  }
-});
+};
 </script>
 
 </body>
